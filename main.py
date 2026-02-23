@@ -42,6 +42,8 @@ DEBUG_MODE = True
 ctypes.windll.kernel32.SetConsoleMode(
     ctypes.windll.kernel32.GetStdHandle(-10), 7
 )
+ACTIVE_STYLE = "QPushButton { border: 2px solid #1aff22; border-radius: 4px; }"
+INACTIVE_STYLE = "QPushButton { border: 2px solid #555; border-radius: 4px; }"
 
 # --- DLL ---
 if getattr(sys, 'frozen', False):
@@ -108,6 +110,8 @@ def start_countdown(seconds, tick_callback, finish_callback):
     countdown_timer.timeout.connect(tick)
     countdown_timer.start(1000)
     tick()
+
+
 # -----------------------------------------------------------------------
 # UI Widgets class
 # -----------------------------------------------------------------------
@@ -155,6 +159,9 @@ class UIWidgets:
         self.version_label                       = f(QLabel,         "VersionLabel")
         self.update_status_label                 = f(QLabel,         "UpdateStatusLabel")
         self.advanced_options_checkbox           = f(QCheckBox,      "AdvancedOptionsCheckBox")
+        self.local_average_cpu_usage             = f(QLabel,         "AverageCPUUsageText")
+        self.local_total_clicks                  = f(QLabel,         "TotalClicksText")
+        self.local_total_time                    = f(QLabel,         "TimeSpentClickingText")
 # fmt: on
 
 # -----------------------------------------------------------------------
@@ -175,7 +182,7 @@ if __name__ == "__main__":
     # -----------------------------------------------------------------------
     # Load settings
     # -----------------------------------------------------------------------
-    config = ConfigParser()
+    config = ConfigParser(interpolation=None)
 
     shortcut_string = load_settings(
         ui_widgets, config, log=lambda m: log(f"[{current_time()}] {m}"))
@@ -256,6 +263,7 @@ if __name__ == "__main__":
     # Session tracking and summary
     # -----------------------------------------------------------------------
     # Session totals (accumulates across runs until app closes)
+    def log_func(m): return log(f"[{current_time()}] {m}")
     _session = {"clicks": 0, "elapsed": 0.0, "cpu_samples": []}
 
     def log_session_summary():
@@ -265,8 +273,7 @@ if __name__ == "__main__":
         total_clicks = _session["clicks"]
         total_elapsed = _session["elapsed"]
         avg_cpu = sum(_session["cpu_samples"]) / \
-            len(_session["cpu_samples"]
-                ) if _session["cpu_samples"] else 0.0
+            len(_session["cpu_samples"]) if _session["cpu_samples"] else 0.0
 
         log(f"[{current_time()}] ---- Session Summary ----")
         log(f"[{current_time()}] Total Clicks : {total_clicks}")
@@ -274,9 +281,42 @@ if __name__ == "__main__":
         log(f"[{current_time()}] Total Avg CPU: {avg_cpu:.1f}%")
         log(f"[{current_time()}] -------------------------")
 
+    def format_time(seconds: float) -> str:
+        if seconds >= 3600:
+            return f"{seconds / 3600:.1f}h"
+        elif seconds >= 60:
+            return f"{seconds / 60:.1f}m"
+        else:
+            return f"{round(seconds, 2)}s"
+
+    def update_local_statistics(clicks, elapsed, avg_cpu):
+        total_clicks = config.getint("Settings", "Total_Clicks", fallback=0)
+        total_time = config.getfloat("Settings", "Total_Time", fallback=0.0)
+        cpu_average = config.getfloat(
+            "Settings", "CPU_Average_Usage", fallback=0.0)
+        total_sessions = config.getint(
+            "Settings", "Total_Sessions", fallback=0)
+
+        new_total_clicks = total_clicks + clicks
+        new_total_time = total_time + elapsed
+        new_sessions = total_sessions + 1
+        new_cpu_avg = (cpu_average * total_sessions + avg_cpu) / new_sessions
+
+        config.set("Settings", "Total_Clicks", str(int(new_total_clicks)))
+        config.set("Settings", "Total_Time", str(round(new_total_time, 2)))
+        config.set("Settings", "CPU_Average_Usage", str(round(new_cpu_avg, 2)))
+        config.set("Settings", "Total_Sessions", str(int(new_sessions)))
+
+        ui_widgets.local_total_clicks.setText(str(int(new_total_clicks)))
+        ui_widgets.local_total_time.setText(format_time(new_total_time))
+        ui_widgets.local_average_cpu_usage.setText(f"{round(new_cpu_avg, 2)}%")
+
+        save_settings(ui_widgets, config, keybind_hotkey=hotkey_manager.get_keybind(),
+                      debug_mode=DEBUG_MODE, log=log_func)
     # -----------------------------------------------------------------------
     # Supabase integration
     # -----------------------------------------------------------------------
+
     def send_stats(clicks, elapsed, avg_cpu):
         for i in range(3):
             response = requests.post(
@@ -293,6 +333,7 @@ if __name__ == "__main__":
                 log(f"[{current_time()}] Supabase error detail: {response.text}")
                 response.raise_for_status()
                 time.sleep(2)
+                continue
             log(f"[{current_time()}] Stats sent to Supabase")
             return
 
@@ -305,7 +346,7 @@ if __name__ == "__main__":
     def on_stop(clicks, elapsed, avg_cpu):
         log(f"[{current_time()}] Session Stopped")
         log_session_summary()
-
+        update_local_statistics(clicks, elapsed, avg_cpu)
         threading.Thread(target=send_stats, args=(
             clicks, elapsed, avg_cpu)).start()
 
@@ -354,7 +395,7 @@ if __name__ == "__main__":
     def click_time_limit():
         time_multipliers = {"seconds": 1, "minutes": 60,
                             "hours": 3600, "days": 86400}
-        if advanced_mode_enabled() and click_limit_enabled():
+        if advanced_mode_enabled() and time_limit_enabled():
             amount = max(float(ui_widgets.time_limit_input.value()), 1)
             unit = ui_widgets.time_limit_combobox.currentText().lower()
             time_limit = amount * time_multipliers.get(unit, 1)
@@ -364,7 +405,7 @@ if __name__ == "__main__":
         return time_limit
 
     def get_screen_limits(pos):
-        if not pos != (0, 0):
+        if pos != (0, 0):
             sw = app.primaryScreen().size().width()
             sh = app.primaryScreen().size().height()
             x, y = pos
@@ -415,14 +456,12 @@ if __name__ == "__main__":
         clicker_active = not clicker_active
         if not clicker_active:
             ui_widgets.clickerstatus.setText("Off")
-            ui_widgets.clickerstatus.setDefault(False)
-            ui_widgets.btn_reset.setDefault(True)
+            ui_widgets.clickerstatus.setStyleSheet(INACTIVE_STYLE)
             rust_translation.stop_clicker()
             log(f"[{current_time()}] Clicker stopped")
-
         else:
             ui_widgets.clickerstatus.setText("On")
-            ui_widgets.clickerstatus.setDefault(True)
+            ui_widgets.clickerstatus.setStyleSheet(ACTIVE_STYLE)
             ui_widgets.btn_reset.setDefault(False)
             clicker_engine_settings = {
                 "click_amount": raw_click_speed(),
@@ -503,6 +542,10 @@ if __name__ == "__main__":
     ui_widgets.pick_position_button.clicked.connect(start_position_picker)
 
     # -----------------------------------------------------------------------
+    # Apply Local Personal Statistics
+    # -----------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------
     # Wire up signals
     # -----------------------------------------------------------------------
     ui_widgets.update_status_label.setVisible(False)
@@ -514,12 +557,17 @@ if __name__ == "__main__":
         hotkey_manager.on_keybind_changed)
     ui_widgets.activation_type_combobox.currentIndexChanged.connect(
         hotkey_manager.set_keybind_mode)
+    ui_widgets.local_total_clicks.setText(
+        config.get("Settings", "Total_Clicks", fallback="0"))
+    ui_widgets.local_total_time.setText(format_time(
+        config.getfloat("Settings", "Total_Time", fallback=0.0)))
+    ui_widgets.local_average_cpu_usage.setText(config.get(
+        "Settings", "CPU_Average_Usage", fallback="0") + "%")
+    ui_widgets.clickerstatus.setStyleSheet(INACTIVE_STYLE)
 
     # -----------------------------------------------------------------------
     # Initialize managers
     # -----------------------------------------------------------------------
-
-    def log_func(m): return log(f"[{current_time()}] {m}")
 
     update_checker.initialize(ui_widgets, log_func, CURRENT_VERSION)
 

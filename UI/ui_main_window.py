@@ -14,7 +14,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-# Form generated from reading UI file 'BlurAutoClickerVqIkle.ui'
+# Form generated from reading UI file 'ui_main_windowZAoMzv.ui'
 ##
 # Created by: Qt User Interface Compiler version 6.10.2
 ##
@@ -31,8 +31,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractSpinBox, QApplication, QCheckBox, QComboBox,
                                QFrame, QGroupBox, QHBoxLayout, QKeySequenceEdit,
                                QLabel, QLayout, QMainWindow, QPushButton,
-                               QSizePolicy, QSpacerItem, QSpinBox, QTabWidget,
-                               QVBoxLayout, QWidget)
+                               QScrollArea, QSizePolicy, QSpacerItem, QSpinBox,
+                               QTabWidget, QVBoxLayout, QWidget)
 
 
 class Ui_BlurAutoClicker(object):
@@ -334,13 +334,66 @@ class Ui_BlurAutoClicker(object):
         self.Tabs.setMaximumSize(QSize(16777215, 1000000))
         self.Tabs.setAutoFillBackground(False)
         self.Tabs.setUsesScrollButtons(True)
-        self.tabWidgetPage1 = QWidget()
-        self.tabWidgetPage1.setObjectName(u"tabWidgetPage1")
-        self.verticalLayout = QVBoxLayout(self.tabWidgetPage1)
+        self.Tabs.setDocumentMode(True)
+        self.Tabs.setTabsClosable(False)
+        self.Tabs.setMovable(False)
+        self.Tabs.setTabBarAutoHide(False)
+        self.Limits = QWidget()
+        self.Limits.setObjectName(u"Limits")
+        self.verticalLayout = QVBoxLayout(self.Limits)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setSizeConstraint(
             QLayout.SizeConstraint.SetMaximumSize)
-        self.frame_5 = QFrame(self.tabWidgetPage1)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.ProGramSettingsscrollArea_2 = QScrollArea(self.Limits)
+        self.ProGramSettingsscrollArea_2.setObjectName(
+            u"ProGramSettingsscrollArea_2")
+        sizePolicy4 = QSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(
+            self.ProGramSettingsscrollArea_2.sizePolicy().hasHeightForWidth())
+        self.ProGramSettingsscrollArea_2.setSizePolicy(sizePolicy4)
+        self.ProGramSettingsscrollArea_2.setFrameShape(QFrame.Shape.NoFrame)
+        self.ProGramSettingsscrollArea_2.setFrameShadow(QFrame.Shadow.Sunken)
+        self.ProGramSettingsscrollArea_2.setLineWidth(1)
+        self.ProGramSettingsscrollArea_2.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.ProGramSettingsscrollArea_2.setWidgetResizable(True)
+        self.scrollAreaWidgetContents_3 = QWidget()
+        self.scrollAreaWidgetContents_3.setObjectName(
+            u"scrollAreaWidgetContents_3")
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 422, 123))
+        self.verticalLayout_14 = QVBoxLayout(self.scrollAreaWidgetContents_3)
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.verticalLayout_14.setContentsMargins(9, 9, 9, 9)
+        self.frame_26 = QFrame(self.scrollAreaWidgetContents_3)
+        self.frame_26.setObjectName(u"frame_26")
+        sizePolicy3.setHeightForWidth(
+            self.frame_26.sizePolicy().hasHeightForWidth())
+        self.frame_26.setSizePolicy(sizePolicy3)
+        self.frame_26.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_26.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_16 = QVBoxLayout(self.frame_26)
+        self.verticalLayout_16.setSpacing(0)
+        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
+        self.verticalLayout_16.setSizeConstraint(
+            QLayout.SizeConstraint.SetMaximumSize)
+        self.verticalLayout_16.setContentsMargins(0, 0, 0, 0)
+
+        self.verticalLayout_14.addWidget(self.frame_26)
+
+        self.frame_28 = QFrame(self.scrollAreaWidgetContents_3)
+        self.frame_28.setObjectName(u"frame_28")
+        sizePolicy1.setHeightForWidth(
+            self.frame_28.sizePolicy().hasHeightForWidth())
+        self.frame_28.setSizePolicy(sizePolicy1)
+        self.frame_28.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_28.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_17 = QVBoxLayout(self.frame_28)
+        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
+        self.frame_5 = QFrame(self.frame_28)
         self.frame_5.setObjectName(u"frame_5")
         sizePolicy1.setHeightForWidth(
             self.frame_5.sizePolicy().hasHeightForWidth())
@@ -401,9 +454,17 @@ class Ui_BlurAutoClicker(object):
 
         self.horizontalLayout_13.addWidget(self.TimeComboBox)
 
-        self.verticalLayout.addWidget(self.frame_5)
+        self.verticalLayout_17.addWidget(self.frame_5)
 
-        self.frame_6 = QFrame(self.tabWidgetPage1)
+        self.line = QFrame(self.frame_28)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShadow(QFrame.Shadow.Raised)
+        self.line.setLineWidth(1)
+        self.line.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayout_17.addWidget(self.line)
+
+        self.frame_6 = QFrame(self.frame_28)
         self.frame_6.setObjectName(u"frame_6")
         self.frame_6.setEnabled(True)
         sizePolicy1.setHeightForWidth(
@@ -437,16 +498,53 @@ class Ui_BlurAutoClicker(object):
 
         self.horizontalLayout_14.addWidget(self.ClickLimitInput)
 
-        self.verticalLayout.addWidget(self.frame_6)
+        self.verticalLayout_17.addWidget(self.frame_6)
 
-        self.Tabs.addTab(self.tabWidgetPage1, "")
-        self.tabWidgetPage2 = QWidget()
-        self.tabWidgetPage2.setObjectName(u"tabWidgetPage2")
-        self.verticalLayout_6 = QVBoxLayout(self.tabWidgetPage2)
+        self.verticalLayout_14.addWidget(self.frame_28)
+
+        self.ProGramSettingsscrollArea_2.setWidget(
+            self.scrollAreaWidgetContents_3)
+
+        self.verticalLayout.addWidget(self.ProGramSettingsscrollArea_2)
+
+        self.Tabs.addTab(self.Limits, "")
+        self.Position = QWidget()
+        self.Position.setObjectName(u"Position")
+        self.verticalLayout_6 = QVBoxLayout(self.Position)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.verticalLayout_6.setSizeConstraint(
             QLayout.SizeConstraint.SetMaximumSize)
-        self.PositionGroupBox = QGroupBox(self.tabWidgetPage2)
+        self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.ProGramSettingsscrollArea_3 = QScrollArea(self.Position)
+        self.ProGramSettingsscrollArea_3.setObjectName(
+            u"ProGramSettingsscrollArea_3")
+        sizePolicy4.setHeightForWidth(
+            self.ProGramSettingsscrollArea_3.sizePolicy().hasHeightForWidth())
+        self.ProGramSettingsscrollArea_3.setSizePolicy(sizePolicy4)
+        self.ProGramSettingsscrollArea_3.setFrameShape(QFrame.Shape.NoFrame)
+        self.ProGramSettingsscrollArea_3.setFrameShadow(QFrame.Shadow.Sunken)
+        self.ProGramSettingsscrollArea_3.setLineWidth(1)
+        self.ProGramSettingsscrollArea_3.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.ProGramSettingsscrollArea_3.setWidgetResizable(True)
+        self.scrollAreaWidgetContents_4 = QWidget()
+        self.scrollAreaWidgetContents_4.setObjectName(
+            u"scrollAreaWidgetContents_4")
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 422, 181))
+        self.verticalLayout_15 = QVBoxLayout(self.scrollAreaWidgetContents_4)
+        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
+        self.verticalLayout_15.setContentsMargins(9, 9, 9, 9)
+        self.frame_27 = QFrame(self.scrollAreaWidgetContents_4)
+        self.frame_27.setObjectName(u"frame_27")
+        sizePolicy1.setHeightForWidth(
+            self.frame_27.sizePolicy().hasHeightForWidth())
+        self.frame_27.setSizePolicy(sizePolicy1)
+        self.frame_27.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_27.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_18 = QVBoxLayout(self.frame_27)
+        self.verticalLayout_18.setObjectName(u"verticalLayout_18")
+        self.verticalLayout_18.setContentsMargins(3, 6, 3, 3)
+        self.PositionGroupBox = QGroupBox(self.frame_27)
         self.PositionGroupBox.setObjectName(u"PositionGroupBox")
         sizePolicy3.setHeightForWidth(
             self.PositionGroupBox.sizePolicy().hasHeightForWidth())
@@ -462,7 +560,7 @@ class Ui_BlurAutoClicker(object):
         self.verticalLayout_2 = QVBoxLayout(self.PositionGroupBox)
         self.verticalLayout_2.setSpacing(6)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(3, 3, 3, 3)
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.frame_3 = QFrame(self.PositionGroupBox)
         self.frame_3.setObjectName(u"frame_3")
         self.frame_3.setFrameShape(QFrame.Shape.NoFrame)
@@ -513,6 +611,14 @@ class Ui_BlurAutoClicker(object):
 
         self.verticalLayout_2.addWidget(self.frame_3)
 
+        self.line_2 = QFrame(self.PositionGroupBox)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShadow(QFrame.Shadow.Raised)
+        self.line_2.setLineWidth(1)
+        self.line_2.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayout_2.addWidget(self.line_2)
+
         self.frame_4 = QFrame(self.PositionGroupBox)
         self.frame_4.setObjectName(u"frame_4")
         self.frame_4.setFrameShape(QFrame.Shape.NoFrame)
@@ -542,6 +648,14 @@ class Ui_BlurAutoClicker(object):
         self.horizontalLayout_11.addWidget(self.OffsetCheckBox)
 
         self.verticalLayout_2.addWidget(self.frame_4)
+
+        self.line_3 = QFrame(self.PositionGroupBox)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShadow(QFrame.Shadow.Raised)
+        self.line_3.setLineWidth(1)
+        self.line_3.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayout_2.addWidget(self.line_3)
 
         self.frame_14 = QFrame(self.PositionGroupBox)
         self.frame_14.setObjectName(u"frame_14")
@@ -602,88 +716,55 @@ class Ui_BlurAutoClicker(object):
 
         self.verticalLayout_2.addWidget(self.frame_14)
 
-        self.verticalLayout_6.addWidget(self.PositionGroupBox)
+        self.verticalLayout_18.addWidget(self.PositionGroupBox)
 
-        self.Tabs.addTab(self.tabWidgetPage2, "")
-        self.tabWidgetPage3 = QWidget()
-        self.tabWidgetPage3.setObjectName(u"tabWidgetPage3")
-        self.verticalLayout_5 = QVBoxLayout(self.tabWidgetPage3)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.frame_12 = QFrame(self.tabWidgetPage3)
-        self.frame_12.setObjectName(u"frame_12")
-        sizePolicy1.setHeightForWidth(
-            self.frame_12.sizePolicy().hasHeightForWidth())
-        self.frame_12.setSizePolicy(sizePolicy1)
-        self.frame_12.setFrameShape(QFrame.Shape.NoFrame)
-        self.frame_12.setFrameShadow(QFrame.Shadow.Plain)
-        self.frame_12.setLineWidth(1)
-        self.horizontalLayout_2 = QHBoxLayout(self.frame_12)
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalLayout_2.setSizeConstraint(
+        self.verticalLayout_15.addWidget(self.frame_27)
+
+        self.frame_29 = QFrame(self.scrollAreaWidgetContents_4)
+        self.frame_29.setObjectName(u"frame_29")
+        sizePolicy3.setHeightForWidth(
+            self.frame_29.sizePolicy().hasHeightForWidth())
+        self.frame_29.setSizePolicy(sizePolicy3)
+        self.frame_29.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_29.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_19 = QVBoxLayout(self.frame_29)
+        self.verticalLayout_19.setSpacing(0)
+        self.verticalLayout_19.setObjectName(u"verticalLayout_19")
+        self.verticalLayout_19.setSizeConstraint(
             QLayout.SizeConstraint.SetMaximumSize)
-        self.horizontalLayout_2.setContentsMargins(3, 3, 3, 3)
-        self.ResetSettingsButton = QPushButton(self.frame_12)
-        self.ResetSettingsButton.setObjectName(u"ResetSettingsButton")
-        self.ResetSettingsButton.setMinimumSize(QSize(170, 25))
-        self.ResetSettingsButton.setMaximumSize(QSize(16777215, 25))
-        self.ResetSettingsButton.setToolTipDuration(-1)
-        self.ResetSettingsButton.setLocale(
-            QLocale(QLocale.English, QLocale.UnitedStates))
-        self.ResetSettingsButton.setCheckable(False)
-        self.ResetSettingsButton.setChecked(False)
-        self.ResetSettingsButton.setAutoDefault(False)
-        self.ResetSettingsButton.setFlat(False)
+        self.verticalLayout_19.setContentsMargins(0, 0, 0, 0)
 
-        self.horizontalLayout_2.addWidget(self.ResetSettingsButton)
+        self.verticalLayout_15.addWidget(self.frame_29)
 
-        self.verticalLayout_5.addWidget(self.frame_12)
+        self.ProGramSettingsscrollArea_3.setWidget(
+            self.scrollAreaWidgetContents_4)
 
-        self.Tabs.addTab(self.tabWidgetPage3, "")
-        self.tabWidgetPage4 = QWidget()
-        self.tabWidgetPage4.setObjectName(u"tabWidgetPage4")
-        self.verticalLayout_7 = QVBoxLayout(self.tabWidgetPage4)
+        self.verticalLayout_6.addWidget(self.ProGramSettingsscrollArea_3)
+
+        self.Tabs.addTab(self.Position, "")
+        self.ProgramSettings = QWidget()
+        self.ProgramSettings.setObjectName(u"ProgramSettings")
+        self.verticalLayout_7 = QVBoxLayout(self.ProgramSettings)
+        self.verticalLayout_7.setSpacing(6)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
-        self.label_9 = QLabel(self.tabWidgetPage4)
-        self.label_9.setObjectName(u"label_9")
-        sizePolicy3.setHeightForWidth(
-            self.label_9.sizePolicy().hasHeightForWidth())
-        self.label_9.setSizePolicy(sizePolicy3)
-        self.label_9.setMinimumSize(QSize(0, 0))
-        self.label_9.setMaximumSize(QSize(16777215, 10000))
-        font1 = QFont()
-        font1.setPointSize(12)
-        font1.setBold(False)
-        self.label_9.setFont(font1)
-        self.label_9.setFrameShape(QFrame.Shape.NoFrame)
-        self.label_9.setFrameShadow(QFrame.Shadow.Raised)
-        self.label_9.setLineWidth(3)
-        self.label_9.setTextFormat(Qt.TextFormat.MarkdownText)
-        self.label_9.setScaledContents(True)
-        self.label_9.setAlignment(
-            Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-        self.label_9.setWordWrap(True)
-        self.label_9.setMargin(0)
-        self.label_9.setIndent(0)
-
-        self.verticalLayout_7.addWidget(self.label_9)
-
-        self.frame_16 = QFrame(self.tabWidgetPage4)
-        self.frame_16.setObjectName(u"frame_16")
-        sizePolicy3.setHeightForWidth(
-            self.frame_16.sizePolicy().hasHeightForWidth())
-        self.frame_16.setSizePolicy(sizePolicy3)
-        self.frame_16.setFrameShape(QFrame.Shape.NoFrame)
-        self.frame_16.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_10 = QVBoxLayout(self.frame_16)
-        self.verticalLayout_10.setSpacing(0)
-        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
-        self.verticalLayout_10.setSizeConstraint(
-            QLayout.SizeConstraint.SetMaximumSize)
-        self.verticalLayout_10.setContentsMargins(0, 0, 0, 0)
-
-        self.verticalLayout_7.addWidget(self.frame_16)
-
-        self.frame_15 = QFrame(self.tabWidgetPage4)
+        self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.ProGramSettingsscrollArea = QScrollArea(self.ProgramSettings)
+        self.ProGramSettingsscrollArea.setObjectName(
+            u"ProGramSettingsscrollArea")
+        self.ProGramSettingsscrollArea.setFrameShape(QFrame.Shape.NoFrame)
+        self.ProGramSettingsscrollArea.setFrameShadow(QFrame.Shadow.Sunken)
+        self.ProGramSettingsscrollArea.setLineWidth(1)
+        self.ProGramSettingsscrollArea.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.ProGramSettingsscrollArea.setWidgetResizable(True)
+        self.scrollAreaWidgetContents_2 = QWidget()
+        self.scrollAreaWidgetContents_2.setObjectName(
+            u"scrollAreaWidgetContents_2")
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 410, 410))
+        self.verticalLayout_8 = QVBoxLayout(self.scrollAreaWidgetContents_2)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(9, 9, 9, 9)
+        self.frame_15 = QFrame(self.scrollAreaWidgetContents_2)
         self.frame_15.setObjectName(u"frame_15")
         sizePolicy3.setHeightForWidth(
             self.frame_15.sizePolicy().hasHeightForWidth())
@@ -696,27 +777,293 @@ class Ui_BlurAutoClicker(object):
         self.verticalLayout_9.setSizeConstraint(
             QLayout.SizeConstraint.SetMaximumSize)
         self.verticalLayout_9.setContentsMargins(0, 0, 0, 0)
-        self.TelemetryCheckBox = QCheckBox(self.frame_15)
+
+        self.verticalLayout_8.addWidget(self.frame_15)
+
+        self.frame_25 = QFrame(self.scrollAreaWidgetContents_2)
+        self.frame_25.setObjectName(u"frame_25")
+        sizePolicy5 = QSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(
+            self.frame_25.sizePolicy().hasHeightForWidth())
+        self.frame_25.setSizePolicy(sizePolicy5)
+        self.frame_25.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_25.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_13 = QVBoxLayout(self.frame_25)
+        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
+        self.frame_9 = QFrame(self.frame_25)
+        self.frame_9.setObjectName(u"frame_9")
+        self.frame_9.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_9.setFrameShadow(QFrame.Shadow.Plain)
+        self.frame_9.setLineWidth(0)
+        self.verticalLayout_10 = QVBoxLayout(self.frame_9)
+        self.verticalLayout_10.setSpacing(4)
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.verticalLayout_10.setContentsMargins(0, 0, 0, 0)
+        self.frame_19 = QFrame(self.frame_9)
+        self.frame_19.setObjectName(u"frame_19")
+        sizePolicy5.setHeightForWidth(
+            self.frame_19.sizePolicy().hasHeightForWidth())
+        self.frame_19.setSizePolicy(sizePolicy5)
+        self.frame_19.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_19.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_8 = QHBoxLayout(self.frame_19)
+        self.horizontalLayout_8.setSpacing(6)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.horizontalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.AverageCPUUsageText_2 = QLabel(self.frame_19)
+        self.AverageCPUUsageText_2.setObjectName(u"AverageCPUUsageText_2")
+        self.AverageCPUUsageText_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.horizontalLayout_8.addWidget(self.AverageCPUUsageText_2)
+
+        self.verticalLayout_10.addWidget(self.frame_19)
+
+        self.line_7 = QFrame(self.frame_9)
+        self.line_7.setObjectName(u"line_7")
+        self.line_7.setFrameShadow(QFrame.Shadow.Raised)
+        self.line_7.setLineWidth(1)
+        self.line_7.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayout_10.addWidget(self.line_7)
+
+        self.frame_16 = QFrame(self.frame_9)
+        self.frame_16.setObjectName(u"frame_16")
+        self.frame_16.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_16.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout = QHBoxLayout(self.frame_16)
+        self.horizontalLayout.setSpacing(6)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.label_2 = QLabel(self.frame_16)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignRight |
+                                  Qt.AlignmentFlag.AlignTrailing | Qt.AlignmentFlag.AlignVCenter)
+
+        self.horizontalLayout.addWidget(self.label_2)
+
+        self.AverageCPUUsageText = QLabel(self.frame_16)
+        self.AverageCPUUsageText.setObjectName(u"AverageCPUUsageText")
+
+        self.horizontalLayout.addWidget(self.AverageCPUUsageText)
+
+        self.verticalLayout_10.addWidget(self.frame_16)
+
+        self.line_4 = QFrame(self.frame_9)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShadow(QFrame.Shadow.Raised)
+        self.line_4.setLineWidth(1)
+        self.line_4.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayout_10.addWidget(self.line_4)
+
+        self.frame_17 = QFrame(self.frame_9)
+        self.frame_17.setObjectName(u"frame_17")
+        self.frame_17.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_17.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_5 = QHBoxLayout(self.frame_17)
+        self.horizontalLayout_5.setSpacing(6)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.label_6 = QLabel(self.frame_17)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setAlignment(Qt.AlignmentFlag.AlignRight |
+                                  Qt.AlignmentFlag.AlignTrailing | Qt.AlignmentFlag.AlignVCenter)
+
+        self.horizontalLayout_5.addWidget(self.label_6)
+
+        self.TotalClicksText = QLabel(self.frame_17)
+        self.TotalClicksText.setObjectName(u"TotalClicksText")
+
+        self.horizontalLayout_5.addWidget(self.TotalClicksText)
+
+        self.verticalLayout_10.addWidget(self.frame_17)
+
+        self.line_5 = QFrame(self.frame_9)
+        self.line_5.setObjectName(u"line_5")
+        self.line_5.setFrameShadow(QFrame.Shadow.Raised)
+        self.line_5.setLineWidth(1)
+        self.line_5.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayout_10.addWidget(self.line_5)
+
+        self.frame_18 = QFrame(self.frame_9)
+        self.frame_18.setObjectName(u"frame_18")
+        self.frame_18.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_18.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_7 = QHBoxLayout(self.frame_18)
+        self.horizontalLayout_7.setSpacing(6)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.horizontalLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.label_4 = QLabel(self.frame_18)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setAlignment(Qt.AlignmentFlag.AlignRight |
+                                  Qt.AlignmentFlag.AlignTrailing | Qt.AlignmentFlag.AlignVCenter)
+
+        self.horizontalLayout_7.addWidget(self.label_4)
+
+        self.TimeSpentClickingText = QLabel(self.frame_18)
+        self.TimeSpentClickingText.setObjectName(u"TimeSpentClickingText")
+
+        self.horizontalLayout_7.addWidget(self.TimeSpentClickingText)
+
+        self.verticalLayout_10.addWidget(self.frame_18)
+
+        self.verticalLayout_13.addWidget(self.frame_9)
+
+        self.line_6 = QFrame(self.frame_25)
+        self.line_6.setObjectName(u"line_6")
+        self.line_6.setFrameShadow(QFrame.Shadow.Raised)
+        self.line_6.setLineWidth(1)
+        self.line_6.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayout_13.addWidget(self.line_6)
+
+        self.verticalLayout_8.addWidget(self.frame_25)
+
+        self.frame_24 = QFrame(self.scrollAreaWidgetContents_2)
+        self.frame_24.setObjectName(u"frame_24")
+        sizePolicy5.setHeightForWidth(
+            self.frame_24.sizePolicy().hasHeightForWidth())
+        self.frame_24.setSizePolicy(sizePolicy5)
+        self.frame_24.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_24.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_12 = QVBoxLayout(self.frame_24)
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.label_11 = QLabel(self.frame_24)
+        self.label_11.setObjectName(u"label_11")
+        sizePolicy3.setHeightForWidth(
+            self.label_11.sizePolicy().hasHeightForWidth())
+        self.label_11.setSizePolicy(sizePolicy3)
+        self.label_11.setMinimumSize(QSize(0, 0))
+        self.label_11.setMaximumSize(QSize(16777215, 10000))
+        font1 = QFont()
+        font1.setPointSize(12)
+        font1.setBold(False)
+        self.label_11.setFont(font1)
+        self.label_11.setFrameShape(QFrame.Shape.NoFrame)
+        self.label_11.setFrameShadow(QFrame.Shadow.Raised)
+        self.label_11.setLineWidth(3)
+        self.label_11.setTextFormat(Qt.TextFormat.MarkdownText)
+        self.label_11.setScaledContents(True)
+        self.label_11.setAlignment(
+            Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.label_11.setWordWrap(True)
+        self.label_11.setMargin(0)
+        self.label_11.setIndent(0)
+
+        self.verticalLayout_12.addWidget(self.label_11)
+
+        self.verticalLayout_8.addWidget(self.frame_24)
+
+        self.frame_22 = QFrame(self.scrollAreaWidgetContents_2)
+        self.frame_22.setObjectName(u"frame_22")
+        sizePolicy5.setHeightForWidth(
+            self.frame_22.sizePolicy().hasHeightForWidth())
+        self.frame_22.setSizePolicy(sizePolicy5)
+        self.frame_22.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_22.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_11 = QVBoxLayout(self.frame_22)
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.frame_23 = QFrame(self.frame_22)
+        self.frame_23.setObjectName(u"frame_23")
+        sizePolicy5.setHeightForWidth(
+            self.frame_23.sizePolicy().hasHeightForWidth())
+        self.frame_23.setSizePolicy(sizePolicy5)
+        self.frame_23.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_23.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_10 = QHBoxLayout(self.frame_23)
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.horizontalLayout_10.setContentsMargins(0, 0, 0, 0)
+        self.label_10 = QLabel(self.frame_23)
+        self.label_10.setObjectName(u"label_10")
+        sizePolicy3.setHeightForWidth(
+            self.label_10.sizePolicy().hasHeightForWidth())
+        self.label_10.setSizePolicy(sizePolicy3)
+        self.label_10.setMinimumSize(QSize(0, 0))
+        self.label_10.setMaximumSize(QSize(16777215, 10000))
+        self.label_10.setFont(font1)
+        self.label_10.setFrameShape(QFrame.Shape.NoFrame)
+        self.label_10.setFrameShadow(QFrame.Shadow.Raised)
+        self.label_10.setLineWidth(3)
+        self.label_10.setTextFormat(Qt.TextFormat.MarkdownText)
+        self.label_10.setScaledContents(True)
+        self.label_10.setAlignment(
+            Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self.label_10.setWordWrap(True)
+        self.label_10.setMargin(0)
+        self.label_10.setIndent(0)
+
+        self.horizontalLayout_10.addWidget(self.label_10)
+
+        self.verticalLayout_11.addWidget(self.frame_23)
+
+        self.frame_21 = QFrame(self.frame_22)
+        self.frame_21.setObjectName(u"frame_21")
+        sizePolicy5.setHeightForWidth(
+            self.frame_21.sizePolicy().hasHeightForWidth())
+        self.frame_21.setSizePolicy(sizePolicy5)
+        self.frame_21.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_21.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_9 = QHBoxLayout(self.frame_21)
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.horizontalLayout_9.setContentsMargins(0, 0, 0, 0)
+        self.horizontalSpacer_4 = QSpacerItem(
+            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_9.addItem(self.horizontalSpacer_4)
+
+        self.TelemetryCheckBox = QCheckBox(self.frame_21)
         self.TelemetryCheckBox.setObjectName(u"TelemetryCheckBox")
-        sizePolicy4 = QSizePolicy(
-            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Maximum)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(
+        sizePolicy6 = QSizePolicy(
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(
             self.TelemetryCheckBox.sizePolicy().hasHeightForWidth())
-        self.TelemetryCheckBox.setSizePolicy(sizePolicy4)
+        self.TelemetryCheckBox.setSizePolicy(sizePolicy6)
         self.TelemetryCheckBox.setMinimumSize(QSize(0, 25))
-        self.TelemetryCheckBox.setMaximumSize(QSize(16777215, 25))
+        self.TelemetryCheckBox.setMaximumSize(QSize(16777215, 30))
         self.TelemetryCheckBox.setToolTipDuration(-1)
+        self.TelemetryCheckBox.setLayoutDirection(
+            Qt.LayoutDirection.RightToLeft)
         self.TelemetryCheckBox.setLocale(
             QLocale(QLocale.English, QLocale.UnitedStates))
         self.TelemetryCheckBox.setChecked(True)
 
-        self.verticalLayout_9.addWidget(self.TelemetryCheckBox)
+        self.horizontalLayout_9.addWidget(self.TelemetryCheckBox)
 
-        self.verticalLayout_7.addWidget(self.frame_15)
+        self.horizontalSpacer_5 = QSpacerItem(
+            40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.Tabs.addTab(self.tabWidgetPage4, "")
+        self.horizontalLayout_9.addItem(self.horizontalSpacer_5)
+
+        self.verticalLayout_11.addWidget(self.frame_21)
+
+        self.verticalLayout_8.addWidget(self.frame_22)
+
+        self.ResetSettingsButton = QPushButton(self.scrollAreaWidgetContents_2)
+        self.ResetSettingsButton.setObjectName(u"ResetSettingsButton")
+        self.ResetSettingsButton.setMinimumSize(QSize(170, 25))
+        self.ResetSettingsButton.setMaximumSize(QSize(16777215, 25))
+        self.ResetSettingsButton.setToolTipDuration(-1)
+        self.ResetSettingsButton.setLocale(
+            QLocale(QLocale.English, QLocale.UnitedStates))
+        self.ResetSettingsButton.setCheckable(False)
+        self.ResetSettingsButton.setChecked(False)
+        self.ResetSettingsButton.setAutoDefault(False)
+        self.ResetSettingsButton.setFlat(False)
+
+        self.verticalLayout_8.addWidget(self.ResetSettingsButton)
+
+        self.ProGramSettingsscrollArea.setWidget(
+            self.scrollAreaWidgetContents_2)
+
+        self.verticalLayout_7.addWidget(self.ProGramSettingsscrollArea)
+
+        self.Tabs.addTab(self.ProgramSettings, "")
 
         self.verticalLayout_4.addWidget(self.Tabs)
 
@@ -734,10 +1081,6 @@ class Ui_BlurAutoClicker(object):
         self.horizontalLayout_12.setContentsMargins(3, 3, 3, 3)
         self.VersionLabel = QLabel(self.frame_2)
         self.VersionLabel.setObjectName(u"VersionLabel")
-        sizePolicy5 = QSizePolicy(
-            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
         sizePolicy5.setHeightForWidth(
             self.VersionLabel.sizePolicy().hasHeightForWidth())
         self.VersionLabel.setSizePolicy(sizePolicy5)
@@ -751,13 +1094,13 @@ class Ui_BlurAutoClicker(object):
 
         self.UpdateStatusLabel = QLabel(self.frame_2)
         self.UpdateStatusLabel.setObjectName(u"UpdateStatusLabel")
-        sizePolicy6 = QSizePolicy(
+        sizePolicy7 = QSizePolicy(
             QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
-        sizePolicy6.setHorizontalStretch(0)
-        sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(
+        sizePolicy7.setHorizontalStretch(0)
+        sizePolicy7.setVerticalStretch(0)
+        sizePolicy7.setHeightForWidth(
             self.UpdateStatusLabel.sizePolicy().hasHeightForWidth())
-        self.UpdateStatusLabel.setSizePolicy(sizePolicy6)
+        self.UpdateStatusLabel.setSizePolicy(sizePolicy7)
         self.UpdateStatusLabel.setMinimumSize(QSize(0, 0))
         self.UpdateStatusLabel.setMaximumSize(QSize(16777215, 25))
         self.UpdateStatusLabel.setToolTipDuration(-1)
@@ -792,40 +1135,15 @@ class Ui_BlurAutoClicker(object):
         QWidget.setTabOrder(self.DutyCycleInput, self.SpeedVariationCheckBox)
         QWidget.setTabOrder(self.SpeedVariationCheckBox,
                             self.SpeedVariationInput)
-        QWidget.setTabOrder(self.SpeedVariationInput, self.TimeLimitCheckBox)
-        QWidget.setTabOrder(self.TimeLimitCheckBox, self.TimeLimitInput)
-        QWidget.setTabOrder(self.TimeLimitInput, self.TimeComboBox)
-        QWidget.setTabOrder(self.TimeComboBox, self.ClickLimitCheckBox)
-        QWidget.setTabOrder(self.ClickLimitCheckBox, self.ClickLimitInput)
-        QWidget.setTabOrder(self.ClickLimitInput, self.PositionGroupBox)
-        QWidget.setTabOrder(self.PositionGroupBox, self.PosXInput)
-        QWidget.setTabOrder(self.PosXInput, self.PosYInput)
-        QWidget.setTabOrder(self.PosYInput, self.PickPositionButton)
-        QWidget.setTabOrder(self.PickPositionButton, self.OffsetInput)
-        QWidget.setTabOrder(self.OffsetInput, self.OffsetCheckBox)
-        QWidget.setTabOrder(self.OffsetCheckBox, self.SmoothingCheckBox)
-        QWidget.setTabOrder(self.SmoothingCheckBox, self.OffsetChanceInput)
-        QWidget.setTabOrder(self.OffsetChanceInput, self.OffsetChanceCheckBox)
-        QWidget.setTabOrder(self.OffsetChanceCheckBox,
-                            self.ResetSettingsButton)
-        QWidget.setTabOrder(self.ResetSettingsButton,
+        QWidget.setTabOrder(self.SpeedVariationInput,
                             self.AdvancedOptionsCheckBox)
         QWidget.setTabOrder(self.AdvancedOptionsCheckBox, self.Tabs)
         QWidget.setTabOrder(self.Tabs, self.KeySequence)
 
         self.retranslateUi(BlurAutoClicker)
         self.AdvancedOptionsCheckBox.toggled.connect(self.Tabs.setVisible)
-        self.OffsetChanceCheckBox.toggled.connect(
-            self.OffsetChanceInput.setEnabled)
-        self.OffsetCheckBox.toggled.connect(self.OffsetInput.setEnabled)
-        self.TimeLimitCheckBox.toggled.connect(self.TimeLimitInput.setEnabled)
-        self.TimeLimitCheckBox.toggled.connect(self.TimeComboBox.setEnabled)
-        self.ClickLimitCheckBox.toggled.connect(
-            self.ClickLimitInput.setEnabled)
         self.SpeedVariationCheckBox.toggled.connect(
             self.SpeedVariationInput.setEnabled)
-        self.OffsetCheckBox.toggled.connect(self.frame_14.setEnabled)
-        self.OffsetCheckBox.toggled.connect(self.frame_13.setEnabled)
 
         self.ClickerStatusButton.setDefault(False)
         self.Tabs.setCurrentIndex(0)
@@ -842,6 +1160,8 @@ class Ui_BlurAutoClicker(object):
 # endif // QT_CONFIG(tooltip)
         self.ClickerStatusButton.setText(
             QCoreApplication.translate("BlurAutoClicker", u"Off", None))
+        self.KeySequence.setKeySequence(
+            QCoreApplication.translate("BlurAutoClicker", u"Ctrl+K", None))
         self.label_5.setText(QCoreApplication.translate(
             "BlurAutoClicker", u"Activation Type:", None))
         self.ActivationTypeComboBox.setItemText(
@@ -931,7 +1251,7 @@ class Ui_BlurAutoClicker(object):
             QCoreApplication.translate("BlurAutoClicker", u"Clicks", None))
         self.ClickLimitInput.setSuffix("")
         self.Tabs.setTabText(self.Tabs.indexOf(
-            self.tabWidgetPage1), QCoreApplication.translate("BlurAutoClicker", u"Limits", None))
+            self.Limits), QCoreApplication.translate("BlurAutoClicker", u"Limits", None))
         self.PositionGroupBox.setTitle(QCoreApplication.translate(
             "BlurAutoClicker", u"Position", None))
 # if QT_CONFIG(tooltip)
@@ -967,25 +1287,39 @@ class Ui_BlurAutoClicker(object):
 # endif // QT_CONFIG(tooltip)
         self.SmoothingCheckBox.setText(QCoreApplication.translate(
             "BlurAutoClicker", u"Smooth Mouse Move", None))
-        self.Tabs.setTabText(self.Tabs.indexOf(self.tabWidgetPage2), QCoreApplication.translate(
-            "BlurAutoClicker", u"Position", None))
+        self.Tabs.setTabText(self.Tabs.indexOf(self.Position), QCoreApplication.translate(
+            "BlurAutoClicker", u"Cursor Position", None))
+        self.AverageCPUUsageText_2.setText(QCoreApplication.translate(
+            "BlurAutoClicker", u"\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015 Personal Statistics: \u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015", None))
+        self.label_2.setText(QCoreApplication.translate(
+            "BlurAutoClicker", u"Average CPU Usage:", None))
+        self.AverageCPUUsageText.setText(QCoreApplication.translate(
+            "BlurAutoClicker", u"AverageCPUUsage", None))
+        self.label_6.setText(QCoreApplication.translate(
+            "BlurAutoClicker", u"Total Clicks:", None))
+        self.TotalClicksText.setText(QCoreApplication.translate(
+            "BlurAutoClicker", u"TotalClicks", None))
+        self.label_4.setText(QCoreApplication.translate(
+            "BlurAutoClicker", u"Total Time Spent Clicking:", None))
+        self.TimeSpentClickingText.setText(QCoreApplication.translate(
+            "BlurAutoClicker", u"TimeSpentClicking", None))
+        self.label_11.setText(QCoreApplication.translate("BlurAutoClicker", u"<html><head/><body><p><span style=\" font-size:11pt;\">If you would like to contribute separately, you can send me your recommendations for this app on Discord: blur.009, or donate on </span><a href=\"https://ko-fi.com/blur009\"><span style=\" font-size:11pt; text-decoration: underline; color:#ff95ca;\">Ko-Fi</span></a></p></body></html>", None))
+        self.label_10.setText(QCoreApplication.translate(
+            "BlurAutoClicker", u"<html><head/><body><p><span style=\" font-size:11pt;\">Telemetry collection does not include any personal information about you. This data is mainly used to judge which features get used most. Enabling telemetry is highly appreciated. &lt;3</span></p></body></html>", None))
+        self.TelemetryCheckBox.setText(QCoreApplication.translate(
+            "BlurAutoClicker", u"Enable Telemetry", None))
 # if QT_CONFIG(tooltip)
         self.ResetSettingsButton.setToolTip(QCoreApplication.translate(
             "BlurAutoClicker", u"<html><head/><body><p><span style=\" color:#ff0a0e;\">Resets all settings to default!</span></p></body></html>", None))
 # endif // QT_CONFIG(tooltip)
         self.ResetSettingsButton.setText(QCoreApplication.translate(
             "BlurAutoClicker", u"Reset Settings To Default", None))
-        self.Tabs.setTabText(self.Tabs.indexOf(
-            self.tabWidgetPage3), QCoreApplication.translate("BlurAutoClicker", u"Other", None))
-        self.label_9.setText(QCoreApplication.translate("BlurAutoClicker", u"<html><head/><body><p><span style=\" font-size:10pt;\">Telemetry collection does not include any personal information about you, or your system. This is used to improve the UI and features.</span></p><p><span style=\" font-size:10pt;\">If you would like to seperately contribute, you can send me your recommendations for this app on Discord: blur.009, or </span><span style=\" font-size:10pt; font-weight:700;\">donate</span><span style=\" font-size:10pt;\"> on </span><a href=\"https://ko-fi.com/blur009\"><span style=\" font-size:10pt; text-decoration: underline; color:#ff95ca;\">Ko-Fi</span></a></p></body></html>", None))
-        self.TelemetryCheckBox.setText(QCoreApplication.translate(
-            "BlurAutoClicker", u"Enable Telemetry", None))
-        self.Tabs.setTabText(self.Tabs.indexOf(self.tabWidgetPage4), QCoreApplication.translate(
+        self.Tabs.setTabText(self.Tabs.indexOf(self.ProgramSettings), QCoreApplication.translate(
             "BlurAutoClicker", u"Program Settings", None))
         self.VersionLabel.setText(QCoreApplication.translate(
             "BlurAutoClicker", u"v1.0.0", None))
         self.UpdateStatusLabel.setText(QCoreApplication.translate(
-            "BlurAutoClicker", u"<html><head/><body><p><span style=\" color:#1aff22;\">Updates Available! Check my GitHub (Blur009)</span></p></body></html>", None))
+            "BlurAutoClicker", u"<html><head/><body><p><span style=\" color:#1aff22;\">Updates Available!</span></p></body></html>", None))
         self.AdvancedOptionsCheckBox.setText(QCoreApplication.translate(
             "BlurAutoClicker", u"Advanced Options", None))
     # retranslateUi

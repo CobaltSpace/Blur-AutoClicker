@@ -24,9 +24,9 @@ Each entry is a dict with these keys:
   default      : the default value
   widget_type  : "spinbox" | "combobox" | "checkbox" | "groupbox" | "keysequence"
 """
-from configparser import ConfigParser
 import os
 from pathlib import Path
+from configparser import ConfigParser
 
 CONFIG_DIR = Path.home() / "AppData" / "Roaming" / "blur009" / "autoclicker"
 CONFIG_FILE = str(CONFIG_DIR / "config.ini")
@@ -78,6 +78,8 @@ def _read_widget(widget, widget_type):
         return widget.currentIndex()
     elif widget_type in ("checkbox", "groupbox"):
         return widget.isChecked()
+    elif widget_type == "label":
+        return widget.text()
     return None
 
 
@@ -90,6 +92,8 @@ def _write_widget(widget, widget_type, value):
         if isinstance(value, str):
             value = value.lower() in ("true", "1", "yes")
         widget.setChecked(bool(value))
+    elif widget_type == "label":
+        widget.setText(str(value))
 
 
 shortcut = "Ctrl+K"

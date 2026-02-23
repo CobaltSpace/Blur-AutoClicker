@@ -69,7 +69,8 @@ def register_hotkey():
         keyboard.add_hotkey(_keybind_hotkey, on_hotkey_trigger)
         _registered_hotkey = _keybind_hotkey
         if _log_func:
-            _log_func(f"[Hotkey] Registered: {_keybind_hotkey} ({_keybind_mode})")
+            _log_func(
+                f"[Hotkey] Registered: {_keybind_hotkey} ({_keybind_mode})")
     except Exception as e:
         if _log_func:
             _log_func(f"[Hotkey] Failed to register '{_keybind_hotkey}': {e}")
@@ -80,7 +81,8 @@ def _start_hold_monitor(hotkey_str):
     if _hold_monitor_running:
         return
     _hold_monitor_running = True
-    t = threading.Thread(target=_hold_monitor_loop, args=(hotkey_str,), daemon=True)
+    t = threading.Thread(target=_hold_monitor_loop,
+                         args=(hotkey_str,), daemon=True)
     t.start()
 
 
@@ -112,12 +114,14 @@ def on_keybind_changed():
     if not _ui_widgets:
         return
 
-    key_string = _ui_widgets.key_sequence.keySequence().toString().lower().replace("meta", "win")
+    key_string = _ui_widgets.key_sequence.keySequence(
+    ).toString().lower().replace("meta", "win")
     if key_string:
         _keybind_hotkey = key_string
         if _log_func:
             _log_func(f"Keybind set to: {_keybind_hotkey}")
         register_hotkey()
+        _ui_widgets.key_sequence.clearFocus()
     else:
         if _log_func:
             _log_func("Keybind cleared")
