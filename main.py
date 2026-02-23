@@ -10,24 +10,26 @@
  * Made with Spite. (the emotion)
  *
 """
-import atexit
+from PySide6.QtCore import QTimer
+from PySide6.QtWidgets import (QApplication, QKeySequenceEdit, QCheckBox,
+                               QComboBox, QPushButton, QSpinBox, QLabel,
+                               QMainWindow, QGroupBox, QMessageBox, QTabWidget)
+from PySide6.QtGui import QCursor
 import os
 import sys
 import time
 import threading
 import ctypes
 import requests
+import atexit
 from configparser import ConfigParser
 from datetime import datetime
 from os.path import exists
-from PySide6.QtCore import QTimer
-from PySide6.QtGui import QCursor, Qt
-from PySide6.QtWidgets import (QApplication, QKeySequenceEdit, QCheckBox, QComboBox,
-                               QPushButton, QSpinBox, QLabel, QMainWindow, QGroupBox, QMessageBox,
-                               QTabWidget)
+from src.Py.settings_manager import (load_settings, save_settings, reset_defaults,
+                                     get_debug_mode, CONFIG_FILE, ensure_config_dir,
+                                     CONFIG_DIR, is_first_launch, mark_launched)
 from src.Private.Supabase import SUPABASE_URL, SUPABASE_KEY
-from src.Py.settings_manager import load_settings, save_settings, reset_defaults, get_debug_mode, CONFIG_FILE, ensure_config_dir, CONFIG_DIR, is_first_launch, mark_launched
-from src.Py import go_translation
+from src.Py import rust_translation
 from src.Py import update_checker
 from src.Py import hotkey_manager
 from src.Py import telemetry
@@ -37,7 +39,9 @@ from UI.ui_main_window import Ui_BlurAutoClicker as ui_main_window
 CURRENT_VERSION = "v2.1.0"
 DEBUG_MODE = True
 
-os.system("")
+ctypes.windll.kernel32.SetConsoleMode(
+    ctypes.windll.kernel32.GetStdHandle(-10), 7
+)
 
 # --- DLL ---
 if getattr(sys, 'frozen', False):
@@ -57,12 +61,18 @@ _supabase_headers = {
     "Content-Type": "application/json",
 }
 
+# -----------------------------------------------------------------------
+# Helper functions and classes
+# -----------------------------------------------------------------------
+
 
 def log(message):
     if not DEBUG_MODE:
         return
+
     TIME_COLOR = "\033[96m"
     RESET = "\033[0m"
+
     if message.startswith("[") and "]" in message:
         split_idx = message.find("]") + 1
         print(f"{TIME_COLOR}{message[:split_idx]}{RESET}{message[split_idx:]}")
@@ -74,8 +84,33 @@ def current_time():
     return datetime.now().strftime('%H:%M:%S')
 
 
-config = ConfigParser()
+countdown_timer: QTimer | None = None
 
+
+def start_countdown(seconds, tick_callback, finish_callback):
+    global countdown_timer
+    remaining = seconds
+
+    if countdown_timer:
+        countdown_timer.stop()
+
+    def tick():
+        nonlocal remaining
+        if remaining > 0:
+            tick_callback(remaining)
+            remaining -= 1
+        else:
+            if countdown_timer:
+                countdown_timer.stop()
+            finish_callback()
+
+    countdown_timer = QTimer()
+    countdown_timer.timeout.connect(tick)
+    countdown_timer.start(1000)
+    tick()
+# -----------------------------------------------------------------------
+# UI Widgets class
+# -----------------------------------------------------------------------
 # fmt: off
 class UIWidgets:
     def __init__(self, ui):
@@ -122,6 +157,10 @@ class UIWidgets:
         self.advanced_options_checkbox           = f(QCheckBox,      "AdvancedOptionsCheckBox")
 # fmt: on
 
+# -----------------------------------------------------------------------
+# Main application logic
+# -----------------------------------------------------------------------
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -130,16 +169,18 @@ if __name__ == "__main__":
     ui.setupUi(window)
     ui_widgets = UIWidgets(window)
 
-    is_clicking = False
+    clicker_active = False
     show_high_speed_warn = True
 
     # -----------------------------------------------------------------------
     # Load settings
     # -----------------------------------------------------------------------
-    # TODO: FIX THIS SETTINGS MESS.  Telemetry Popup doesnt work & i have no clue whats going on with the keybind settings.  Refactor this whole thing.
+    config = ConfigParser()
+
     shortcut_string = load_settings(
         ui_widgets, config, log=lambda m: log(f"[{current_time()}] {m}"))
     keybind_hotkey = shortcut_string.lower().replace("meta", "win")
+
     if exists("config.ini"):
         DEBUG_MODE = get_debug_mode(config)
 
@@ -150,7 +191,7 @@ if __name__ == "__main__":
         if isinstance(attr, (QCheckBox, QGroupBox)):
             attr.toggled.emit(attr.isChecked())
 
-    def show_telemetry_popup():
+    def show_data_collection_popup():
         popup = QMessageBox()
         popup.setWindowTitle("Anonymous Telemetry Collection")
         popup.setText(
@@ -159,41 +200,43 @@ if __name__ == "__main__":
         )
         popup.setIcon(QMessageBox.Icon.Information)
         popup.setStandardButtons(QMessageBox.StandardButton.Ok)
-
         accept_telemetry_checkbox = QCheckBox(
-            "I accept the anonymous telemetry"
-        )
+            "I accept the anonymous telemetry")
         popup.setCheckBox(accept_telemetry_checkbox)
-
         ok_button = popup.button(QMessageBox.StandardButton.Ok)
         ok_button.setEnabled(False)
-
         countdown = [5]
         ok_button.setText(f"OK ({countdown[0]})")
         timer = QTimer(popup)
         timer.setInterval(1000)
 
         def update_ok_button():
-            countdown[0] -= 1
-            if countdown[0] > 0:
-                ok_button.setText(f"OK ({countdown[0]})")
-            else:
+            if not accept_telemetry_checkbox.isChecked():
+                countdown[0] -= 1
+                if countdown[0] > 0:
+                    ok_button.setText(f"OK ({countdown[0]})")
+                else:
+                    timer.stop()
+                    ok_button.setText("OK")
+                    ok_button.setEnabled(True)
+            if accept_telemetry_checkbox.isChecked():
                 timer.stop()
-                ok_button.setText("OK")
+                ok_button.setText("Thank You <3")
                 ok_button.setEnabled(True)
 
         timer.timeout.connect(update_ok_button)
         timer.start()
-
         popup.exec()
+
         if accept_telemetry_checkbox.isChecked():
             ui_widgets.telemetry_checkbox.setChecked(True)
         else:
             ui_widgets.telemetry_checkbox.setChecked(False)
 
     if is_first_launch(config):
-        show_telemetry_popup()
+        show_data_collection_popup()
         mark_launched(config)
+
     # -----------------------------------------------------------------------
     # Window / UI
     # -----------------------------------------------------------------------
@@ -210,152 +253,194 @@ if __name__ == "__main__":
     ui.Tabs.setEnabled(ui_widgets.advanced_options_checkbox.isChecked())
 
     # -----------------------------------------------------------------------
-    # Supabase
+    # Session tracking and summary
     # -----------------------------------------------------------------------
-
     # Session totals (accumulates across runs until app closes)
     _session = {"clicks": 0, "elapsed": 0.0, "cpu_samples": []}
 
     def log_session_summary():
         if _session["clicks"] == 0:
-            return
+            return "No Session Data"
+
         total_clicks = _session["clicks"]
         total_elapsed = _session["elapsed"]
         avg_cpu = sum(_session["cpu_samples"]) / \
-            len(_session["cpu_samples"]) if _session["cpu_samples"] else 0.0
+            len(_session["cpu_samples"]
+                ) if _session["cpu_samples"] else 0.0
+
         log(f"[{current_time()}] ---- Session Summary ----")
         log(f"[{current_time()}] Total Clicks : {total_clicks}")
         log(f"[{current_time()}] Total Time   : {total_elapsed:.2f}s")
         log(f"[{current_time()}] Total Avg CPU: {avg_cpu:.1f}%")
         log(f"[{current_time()}] -------------------------")
 
+    # -----------------------------------------------------------------------
+    # Supabase integration
+    # -----------------------------------------------------------------------
     def send_stats(clicks, elapsed, avg_cpu):
-        for attempt in range(3):
-            try:
-                response = requests.post(
-                    f"{SUPABASE_URL}/rest/v1/quick_updates",
-                    headers=_supabase_headers,
-                    json={
-                        "clicks": clicks,
-                        "time": round(elapsed, 2),
-                        "avg_cpu": round(avg_cpu, 2),
-                    },
-                    timeout=10,
-                )
-                if not response.ok:
-                    log(f"[{current_time()}] Supabase error detail: {response.text}")
-                    response.raise_for_status()
-                log(f"[{current_time()}] Stats sent to Supabase")
-                return
-            except Exception as e:
-                log(f"[{current_time()}] Supabase attempt {attempt + 1} failed: {e}")
-                if attempt < 2:
-                    time.sleep(2)
+        for i in range(3):
+            response = requests.post(
+                f"{SUPABASE_URL}/rest/v1/quick_updates",
+                headers=_supabase_headers,
+                json={
+                    "clicks": clicks,
+                    "time": round(elapsed, 2),
+                    "avg_cpu": round(avg_cpu, 2),
+                },
+                timeout=10,
+            )
+            if not response.ok:
+                log(f"[{current_time()}] Supabase error detail: {response.text}")
+                response.raise_for_status()
+                time.sleep(2)
+            log(f"[{current_time()}] Stats sent to Supabase")
+            return
+
         log(f"[{current_time()}] Stats failed to send after 3 attempts")
 
     # -----------------------------------------------------------------------
     # Clicker logic
     # -----------------------------------------------------------------------
 
-    def on_clicker_finished():
-        global is_clicking
-        if is_clicking:
-            is_clicking = False
-            ui_widgets.clickerstatus.setText("Off")
-            ui_widgets.clickerstatus.setDefault(False)
-            ui_widgets.btn_reset.setDefault(True)
-            log(f"[{current_time()}] Clicker finished: Limit reached.")
-
     def on_stop(clicks, elapsed, avg_cpu):
-        _session["clicks"] += clicks
-        _session["elapsed"] += elapsed
-        _session["cpu_samples"].append(avg_cpu)
-        log(f"[{current_time()}] Clicker finished: {clicks} clicks in {elapsed:.2f}s, CPU: {avg_cpu:.1f}%")
+        log(f"[{current_time()}] Session Stopped")
         log_session_summary()
+
         threading.Thread(target=send_stats, args=(
             clicks, elapsed, avg_cpu)).start()
 
     _cb_ref = STATS_CB(on_stop)
     dll.set_stats_callback(_cb_ref)
 
-    def toggle_clicker_start_stop():
-        global is_clicking
-        is_clicking = not is_clicking
-
-        if is_clicking:
-            ui_widgets.clickerstatus.setText("On")
-            ui_widgets.clickerstatus.setDefault(True)
-            ui_widgets.btn_reset.setDefault(False)
-            try:
-                advanced_mode = ui_widgets.advanced_options_checkbox.isChecked()
-                speed = ui_widgets.click_speed_input.value()
-                unit_map = {"Second": "second", "Minute": "minute",
-                            "Hour": "hour", "Day": "day"}
-                btn_map = {"Left Click": "left",
-                           "Right Click": "right", "Middle Click": "middle"}
-
-                variation = ui_widgets.speed_variation_input.value() if (
-                    advanced_mode and ui_widgets.speed_variation_checkbox.isChecked()) else 0
-                duty = ui_widgets.duty_cycle_input.value()
-                button = btn_map.get(
-                    ui_widgets.mouse_button_combobox.currentText(), "left")
-                limit = ui_widgets.click_limit_input.value() if (
-                    advanced_mode and ui_widgets.click_limit_checkbox.isChecked()) else 0
-
-                pos = (ui_widgets.pos_x_input.value(), ui_widgets.pos_y_input.value()) if (
-                    advanced_mode and ui_widgets.position_options_checkbox.isChecked()) else (0, 0)
-                if pos != (0, 0):
-                    sw = app.primaryScreen().size().width()
-                    sh = app.primaryScreen().size().height()
-                    x, y = pos
-                    if x < 0 or x >= sw or y < 0 or y >= sh:
-                        ui_widgets.pos_x_input.setValue(0)
-                        ui_widgets.pos_y_input.setValue(0)
-                        pos = (0, 0)
-                        log(f"[{current_time()}] Position out of bounds, reset to (0, 0)")
-
-                offset = ui_widgets.click_offset_input.value() if (
-                    advanced_mode and ui_widgets.click_offset_checkbox.isChecked()) else 0
-                offset_chance = ui_widgets.click_offset_chance_input.value() if (
-                    advanced_mode and ui_widgets.click_offset_chance_input_checkbox.isChecked()) else 0
-                smoothing = ui_widgets.click_offset_smoothing_checkbox.isChecked(
-                ) if advanced_mode else False
-
-                if advanced_mode and ui_widgets.time_limit_checkbox.isChecked():
-                    amount = max(float(ui_widgets.time_limit_input.value()), 1)
-                    unit = ui_widgets.time_limit_combobox.currentText().lower()
-                    multipliers = {"seconds": 1, "minutes": 60,
-                                   "hours": 3600, "days": 86400}
-                    time_limit = amount * multipliers.get(unit, 1)
-                else:
-                    time_limit = 0
-
-                unit = unit_map.get(
-                    ui_widgets.click_interval_combobox.currentText(), "second")
-                settings = {
-                    "click_amount": speed,
-                    "click_unit": unit,
-                    "click_variation": variation,
-                    "click_limit": limit,
-                    "click_duty_cycle": duty,
-                    "click_time_limit": time_limit,
-                    "click_button": button,
-                    "click_position": pos,
-                    "click_position_offset": offset,
-                    "click_position_offset_chance": offset_chance,
-                    "click_position_smoothing": smoothing,
-                }
-                go_translation.start_clicker(settings, on_clicker_finished)
-                log(f"[{current_time()}] Clicker started")
-            except Exception as e:
-                log(f"[{current_time()}] Error starting clicker: {e}")
-                is_clicking = False
-        else:
+    def on_clicker_finished():
+        global clicker_active
+        if clicker_active:
+            clicker_active = False
             ui_widgets.clickerstatus.setText("Off")
             ui_widgets.clickerstatus.setDefault(False)
             ui_widgets.btn_reset.setDefault(True)
-            go_translation.stop_clicker()
+            log(f"[{current_time()}] Clicker finished: Limit reached.")
+
+    def advanced_mode_enabled():
+        return ui_widgets.advanced_options_checkbox.isChecked()
+
+    def raw_click_speed():
+        return float(ui_widgets.click_speed_input.value())
+
+    def click_speed_variation():
+        return ui_widgets.speed_variation_input.value() if (
+            advanced_mode_enabled() and ui_widgets.speed_variation_checkbox.isChecked()) else 0
+
+    def duty_cycle():
+        return ui_widgets.duty_cycle_input.value()
+
+    def mouse_button():
+        button_map = {"Left Click": "left",
+                      "Right Click": "right", "Middle Click": "middle"}
+        return button_map.get(
+            ui_widgets.mouse_button_combobox.currentText(), "left")
+
+    def click_limit_enabled() -> bool:
+        return advanced_mode_enabled() and ui_widgets.click_limit_checkbox.isChecked()
+
+    def click_amount_limit():
+        if advanced_mode_enabled() and click_limit_enabled():
+            return ui_widgets.click_limit_input.value()
+        return 0
+
+    def time_limit_enabled() -> bool:
+        return advanced_mode_enabled() and ui_widgets.time_limit_checkbox.isChecked()
+
+    def click_time_limit():
+        time_multipliers = {"seconds": 1, "minutes": 60,
+                            "hours": 3600, "days": 86400}
+        if advanced_mode_enabled() and click_limit_enabled():
+            amount = max(float(ui_widgets.time_limit_input.value()), 1)
+            unit = ui_widgets.time_limit_combobox.currentText().lower()
+            time_limit = amount * time_multipliers.get(unit, 1)
+        else:
+            time_limit = 0
+
+        return time_limit
+
+    def get_screen_limits(pos):
+        if not pos != (0, 0):
+            sw = app.primaryScreen().size().width()
+            sh = app.primaryScreen().size().height()
+            x, y = pos
+            if x < 0 or x >= sw or y < 0 or y >= sh:
+                ui_widgets.pos_x_input.setValue(0)
+                ui_widgets.pos_y_input.setValue(0)
+                pos = (0, 0)
+                log(f"[{current_time()}] Position out of bounds, reset to (0, 0)")
+
+    def click_unit():
+        unit_map = {"Second": "second", "Minute": "minute",
+                    "Hour": "hour", "Day": "day"}
+        return unit_map.get(ui_widgets.click_interval_combobox.currentText().lower(), "second")
+
+    def click_position_enabled() -> bool:
+        return advanced_mode_enabled() and ui_widgets.position_options_checkbox.isChecked()
+
+    def click_position():
+        if click_position_enabled():
+            pos = (ui_widgets.pos_x_input.value(),
+                   ui_widgets.pos_y_input.value())
+        else:
+            pos = (0, 0)
+
+        get_screen_limits(pos)
+        return pos
+
+    def click_position_offset():
+        if advanced_mode_enabled() and click_position_enabled():
+            return ui_widgets.click_offset_input.value()
+        else:
+            return 0
+
+    def click_position_offset_chance():
+        if advanced_mode_enabled() and click_position_enabled():
+            return ui_widgets.click_offset_chance_input.value()
+        else:
+            return 0
+
+    def click_position_smoothing_enabled() -> bool:
+        if advanced_mode_enabled() and click_position_enabled():
+            return ui_widgets.click_offset_smoothing_checkbox.isChecked()
+        else:
+            return False
+
+    def toggle_clicker_start_stop():
+        global clicker_active
+        clicker_active = not clicker_active
+        if not clicker_active:
+            ui_widgets.clickerstatus.setText("Off")
+            ui_widgets.clickerstatus.setDefault(False)
+            ui_widgets.btn_reset.setDefault(True)
+            rust_translation.stop_clicker()
             log(f"[{current_time()}] Clicker stopped")
+
+        else:
+            ui_widgets.clickerstatus.setText("On")
+            ui_widgets.clickerstatus.setDefault(True)
+            ui_widgets.btn_reset.setDefault(False)
+            clicker_engine_settings = {
+                "click_amount": raw_click_speed(),
+                "click_unit": click_unit(),
+                "click_variation": click_speed_variation(),
+                "click_limit": click_amount_limit(),
+                "click_duty_cycle": duty_cycle(),
+                "click_time_limit": click_time_limit(),
+                "click_button": mouse_button(),
+                "click_position": click_position(),
+                "click_position_offset": click_position_offset(),
+                "click_position_offset_chance": click_position_offset_chance(),
+                "click_position_smoothing": click_position_smoothing_enabled(),
+            }
+
+            rust_translation.start_clicker(
+                clicker_engine_settings, on_clicker_finished)
+            log(f"[{current_time()}] Clicker started")
 
     hotkey_manager.set_toggle_callback(toggle_clicker_start_stop)
 
@@ -375,11 +460,13 @@ if __name__ == "__main__":
 
     def click_speed_warn():
         global show_high_speed_warn
+
         if not show_high_speed_warn:
             return
         cps = max(float(ui_widgets.click_speed_input.value()), 1)
         divisors = {"second": 1, "minute": 60, "hour": 3600, "day": 86400}
         unit = ui_widgets.click_interval_combobox.currentText().lower()
+
         if cps / divisors.get(unit, 1) >= 500:
             warning = QMessageBox()
             warning.setWindowTitle("High Click Speed")
@@ -398,29 +485,6 @@ if __name__ == "__main__":
     # -----------------------------------------------------------------------
     # Position picker
     # -----------------------------------------------------------------------
-
-    countdown_timer: QTimer | None = None
-
-    def start_countdown(seconds, tick_callback, finish_callback):
-        global countdown_timer
-        if countdown_timer:
-            countdown_timer.stop()
-        remaining = seconds
-
-        def tick():
-            nonlocal remaining
-            if remaining > 0:
-                tick_callback(remaining)
-                remaining -= 1
-            else:
-                if countdown_timer:
-                    countdown_timer.stop()
-                finish_callback()
-
-        countdown_timer = QTimer()
-        countdown_timer.timeout.connect(tick)
-        countdown_timer.start(1000)
-        tick()
 
     def start_position_picker():
         def on_tick(seconds_left):
@@ -448,8 +512,6 @@ if __name__ == "__main__":
     ui_widgets.btn_reset.clicked.connect(lambda: ui.Tabs.setCurrentIndex(0))
     ui_widgets.key_sequence.keySequenceChanged.connect(
         hotkey_manager.on_keybind_changed)
-    ui_widgets.key_sequence.keySequenceChanged.connect(
-        hotkey_manager.stop_clicker)
     ui_widgets.activation_type_combobox.currentIndexChanged.connect(
         hotkey_manager.set_keybind_mode)
 

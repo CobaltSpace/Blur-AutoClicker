@@ -7,6 +7,11 @@
 - logging of clicker session time and total time, session clicks and total clicks
 
 ## 🔹 Changed:
+- Refractor of:
+     - main.py
+     - settings_manager.py
+     - hotkey_manager.py
+     - rust_translation.py
 - updated file structure
 - Config.ini now saves at %appdata%/blur009/autoclicker/config.ini
 - split up main.py into individual files to reduce line count per file.
