@@ -45,7 +45,7 @@ pub fn run() {
             if cfg!(debug_assertions) {
                 let _ = app.handle().plugin(
                     tauri_plugin_log::Builder::default()
-                        .level(log::LevelFilter::Info)
+                        .level(log::LevelFilter::Debug)
                         .build(),
                 );
             }
@@ -80,7 +80,7 @@ pub fn run() {
 
             let handle = app.handle().clone();
             start_hotkey_listener(handle.clone());
-            register_hotkey_inner(&handle, initial_hotkey).map_err(|e| std::io::Error::other(e))?;
+            register_hotkey_inner(&handle, initial_hotkey).map_err(std::io::Error::other)?;
             emit_status(&handle);
             Ok(())
         })

@@ -80,19 +80,23 @@ export default function App() {
     latestVersion: string;
   } | null>(null);
 
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const persistSettings = (nextSettings: Settings) => {
     settingsRef.current = nextSettings;
     setSettings(nextSettings);
 
     if (!settingsLoaded) return;
 
-    saveSettings(nextSettings).catch((err) => {
-      console.error("Failed to save settings:", err);
-    });
-
     syncSettingsToBackend(nextSettings).catch((err) => {
       console.error("Failed to sync settings:", err);
     });
+
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      saveSettings(nextSettings).catch((err) => {
+        console.error("Failed to save settings:", err);
+      });
+    }, 100);
   };
 
   const updateSettings = (patch: Partial<Settings>) => {

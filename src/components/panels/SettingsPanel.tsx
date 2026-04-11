@@ -263,8 +263,8 @@ export default function SettingsPanel({
           <div className="settings-label-group">
             <span className="settings-label">Share Usage data</span>
             <span className="settings-sublabel">
-              Share Anonymous analytics to improve the app. No personal information
-              will be collected.
+              Share Anonymous analytics to improve the app. No personal
+              information will be collected.
             </span>
           </div>
           <div className="settings-seg-group">

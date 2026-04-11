@@ -1,3 +1,14 @@
+# v3.2.0 - ..2026 (d.m.y)
+## 🔹 Changed:
+- Replaced GetProcessTimes with QueryThreadCycleTime for CPU usage measurement. This gives a more accurate representation of the CPU time used by the clicker. All runs should now output accurate CPU usage, even if the clicker only ran for a single millisecond. The trade-off is that CPU usage is now measured for only the clicker thread instead of the entire app, though the clicker thread is the main source of CPU usage anyway.
+## 🔺 Fix:
+- Added timeout for writing settings, this prevents settings race condition. (Usually a non-issue, but it's best practice)
+## 🔸 Performance Updates:
+- Changed sending telemetry from its own tokio runtime to using the tauri async runtime.
+## 🪦 Removed:
+- Removed unused stop_clicker() function (stopping is handled via the running atomic flag)
+
+
 # v3.1.0 - 07.04.2026 (d.m.y)
 ## ❇️ New Features:
 - Added AUTO UPDATES (this is a big one, I know :3)

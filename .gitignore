@@ -47,3 +47,4 @@ lerna-debug.log*
 structure.txt
 DirRead.py
 combine_files.py
+.continue

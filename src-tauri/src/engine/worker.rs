@@ -5,8 +5,8 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use tauri::{AppHandle, Emitter, Manager};
 
+use crate::engine::start_clicker as engine_start;
 use crate::engine::stats::{print_run_stats, record_run};
-use crate::engine::{start_clicker as engine_start, stop_clicker as engine_stop};
 use crate::ClickerSettings;
 use crate::ClickerState;
 use crate::ClickerStatusPayload;
@@ -20,62 +20,45 @@ use super::NtSetTimerResolution;
 use super::RunOutcome;
 use super::CLICK_COUNT;
 
-use windows_sys::Win32::Foundation::FILETIME;
-use windows_sys::Win32::System::Threading::{GetCurrentProcess, GetProcessTimes};
+// -- CPU measurement --
+// changed from normal cpu measurement because it was not accurately
+// showing cpu usage for short clicker run times.
 
-// -- CPU sampling --
+windows_targets::link!(
+    "kernel32.dll" "system" fn QueryThreadCycleTime(thread: *mut core::ffi::c_void, cycles: *mut u64) -> i32
+);
+windows_targets::link!(
+    "kernel32.dll" "system" fn GetCurrentThread() -> *mut core::ffi::c_void
+);
 
 #[inline]
-fn cpu_usage_percent(prev_process: &mut u64, prev_instant: &mut Instant) -> f64 {
-    let mut creation = FILETIME {
-        dwLowDateTime: 0,
-        dwHighDateTime: 0,
-    };
-    let mut exit = FILETIME {
-        dwLowDateTime: 0,
-        dwHighDateTime: 0,
-    };
-    let mut kernel = FILETIME {
-        dwLowDateTime: 0,
-        dwHighDateTime: 0,
-    };
-    let mut user = FILETIME {
-        dwLowDateTime: 0,
-        dwHighDateTime: 0,
-    };
-
+fn thread_cycles() -> u64 {
+    let mut cycles: u64 = 0;
     unsafe {
-        GetProcessTimes(
-            GetCurrentProcess(),
-            &mut creation,
-            &mut exit,
-            &mut kernel,
-            &mut user,
-        );
+        QueryThreadCycleTime(GetCurrentThread(), &mut cycles);
     }
-
-    let to_u64 = |ft: FILETIME| (ft.dwHighDateTime as u64) << 32 | ft.dwLowDateTime as u64;
-    let process_time = to_u64(kernel) + to_u64(user);
-
-    let d_process = process_time.saturating_sub(*prev_process);
-    *prev_process = process_time;
-
-    let d_wall = prev_instant.elapsed().as_nanos() as u64 / 100;
-    *prev_instant = Instant::now();
-
-    if d_wall == 0 {
-        return 0.0;
-    }
-
-    (d_process as f64 / d_wall as f64) * 100.0
+    cycles
 }
 
-#[inline]
-fn cpu_sample_interval(elapsed: Duration) -> Duration {
-    match elapsed.as_secs() {
-        0..=10 => Duration::from_millis(100),
-        11..=60 => Duration::from_secs(2),
-        _ => Duration::from_secs(5),
+// Calibrates the CPU cycle frequency
+fn calibrate_cycle_freq() -> f64 {
+    let start_cycles = thread_cycles();
+    let start = Instant::now();
+
+    // Spin for ~5ms
+    while start.elapsed().as_millis() < 5 {
+        std::hint::spin_loop();
+    }
+
+    let cycle_delta = thread_cycles().saturating_sub(start_cycles);
+    let wall_secs = start.elapsed().as_secs_f64();
+    
+    if wall_secs > 0.0 && cycle_delta > 0 {
+        let freq = cycle_delta as f64 / wall_secs;
+        log::info!("CPU: calibrated at {:.0} MHz", freq / 1_000_000.0);
+        freq
+    } else {
+        3_000_000_000.0 // fallback 3 GHz
     }
 }
 
@@ -116,8 +99,7 @@ pub fn start_clicker_inner(app: &AppHandle) -> Result<ClickerStatusPayload, Stri
             let unsent = crate::engine::stats::get_unsent_runs();
             let ids: Vec<u64> = unsent.iter().map(|r| r.id).collect();
 
-            let rt = tokio::runtime::Runtime::new().unwrap();
-            match rt.block_on(crate::telemetry::send_stats_rows(&unsent)) {
+            match tauri::async_runtime::block_on(crate::telemetry::send_stats_rows(&unsent)) {
                 Ok(_) => {
                     let _ = crate::engine::stats::mark_runs_sent(&ids);
                 }
@@ -143,7 +125,6 @@ pub fn stop_clicker_inner(
 ) -> Result<ClickerStatusPayload, String> {
     let state = app.state::<ClickerState>();
     state.running.store(false, Ordering::SeqCst);
-    engine_stop();
     if let Some(reason) = stop_reason {
         *state.stop_reason.lock().unwrap() = Some(reason);
     }
@@ -268,8 +249,11 @@ pub fn start_clicker(config: ClickerConfig, running: Arc<AtomicBool>) -> RunOutc
     let mut current = 0u32;
     unsafe { NtSetTimerResolution(15000, 1, &mut current) };
 
-    let mut rng = SmallRng::new();
+    let cycle_freq = calibrate_cycle_freq();
+    let cpu_cycles_start = thread_cycles();
     let start_time = Instant::now();
+
+    let mut rng = SmallRng::new();
     let mut click_count: i64 = 0;
     let (down_flag, up_flag) = get_button_flags(config.button);
     let cps = if config.interval > 0.0 {
@@ -291,12 +275,6 @@ pub fn start_clicker(config: ClickerConfig, running: Arc<AtomicBool>) -> RunOutc
     let mut target_y = config.pos_y;
     let mut next_batch_time = Instant::now();
     let mut stop_reason = String::from("Stopped");
-
-    let mut prev_process: u64 = 0;
-    let mut prev_instant = Instant::now();
-    let mut cpu_samples: Vec<f64> = Vec::new();
-    let mut warmup_samples: u32 = 2;
-    let mut last_cpu_sample = Instant::now();
 
     if has_position {
         move_mouse(target_x, target_y);
@@ -385,17 +363,6 @@ pub fn start_clicker(config: ClickerConfig, running: Arc<AtomicBool>) -> RunOutc
         click_count += clicks_this_cycle as i64;
         CLICK_COUNT.store(click_count, Ordering::Relaxed);
 
-        // Sample CPU usage with changing interval
-        if last_cpu_sample.elapsed() >= cpu_sample_interval(start_time.elapsed()) {
-            let sample = cpu_usage_percent(&mut prev_process, &mut prev_instant);
-            if warmup_samples == 0 {
-                cpu_samples.push(sample);
-            } else {
-                warmup_samples -= 1;
-            }
-            last_cpu_sample = Instant::now();
-        }
-
         let remaining = next_batch_time.saturating_duration_since(Instant::now());
         if remaining > Duration::ZERO {
             sleep_interruptible(remaining, &running);
@@ -406,16 +373,18 @@ pub fn start_clicker(config: ClickerConfig, running: Arc<AtomicBool>) -> RunOutc
     unsafe { NtSetTimerResolution(15000, 0, &mut current) };
 
     let elapsed_secs = start_time.elapsed().as_secs_f64();
+    let cpu_cycles_end = thread_cycles();
+    let cycle_delta = cpu_cycles_end.saturating_sub(cpu_cycles_start);
 
-    let avg_cpu: f64 = if cpu_samples.is_empty() {
-        //set avg_cpu to -1 when
-        -1.0 //the value is empty
+    let avg_cpu: f64 = if elapsed_secs < 0.001 {
+        -1.0
     } else {
-        let avg = cpu_samples.iter().sum::<f64>() / cpu_samples.len() as f64;
-        if avg == 0.0 {
-            -1.0 //the value is 0.0 (probably incorrect, so id rather remove it)
+        let cpu_seconds = cycle_delta as f64 / cycle_freq;
+        let pct = (cpu_seconds / elapsed_secs) * 100.0;
+        if pct < 0.001 {
+            -1.0
         } else {
-            avg
+            pct
         }
     };
 
@@ -426,8 +395,6 @@ pub fn start_clicker(config: ClickerConfig, running: Arc<AtomicBool>) -> RunOutc
         avg_cpu,
     }
 }
-
-pub fn stop_clicker() {}
 
 pub fn get_click_count() -> i64 {
     CLICK_COUNT.load(Ordering::Relaxed)
